@@ -6,6 +6,8 @@ from model.faster_rcnn import FasterRCNN
 from model.roi_module import RoIPooling2D
 from utils import array_tool as at
 from utils.config import opt
+import Model.quantization as qt
+from collections import OrderedDict
 
 
 def decom_vgg16():
@@ -18,22 +20,33 @@ def decom_vgg16():
         model = vgg16(not opt.load_path)
 
     features = list(model.features)[:30]
+    features = [(str(i),features[i]) for i in range(len(features))]
+    
+    idxs = [0,3,7,10,14,17,20,24,27,30,34,37,40]
+    
+    for i in idxs:
+        features.insert(i,('Q'+str(i),qt.activation_quantization(8,qt.Quant.linear)))
+    
+    
     classifier = model.classifier
-
     classifier = list(classifier)
     del classifier[6]
     if not opt.use_drop:
         del classifier[5]
         del classifier[2]
-    classifier = nn.Sequential(*classifier)
-
+    
+    classifier = [(str(i),classifier[i]) for i in range(len(classifier))]
+    classifier.insert(0,('Q0',qt.activation_quantization(8,qt.Quant.linear)))
+    classifier.insert(3,('Q3',qt.activation_quantization(8,qt.Quant.linear)))
+    
+    classifier = nn.Sequential(OrderedDict(classifier))
+    #classifier = nn.Sequential(*classifier)
     # freeze top4 conv
-    for layer in features[:10]:
+    for name,layer in features[:14]:
         for p in layer.parameters():
             p.requires_grad = False
 
-    return nn.Sequential(*features), classifier
-
+    return nn.Sequential(OrderedDict(features)), classifier
 
 class FasterRCNNVGG16(FasterRCNN):
     """Faster R-CNN based on VGG-16.

@@ -1,0 +1,23 @@
+INFO:root:Application Started
+Traceback (most recent call last):
+  File "/home/shared/anaconda3/lib/python3.6/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/home/shared/anaconda3/lib/python3.6/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/shared/anaconda3/lib/python3.6/site-packages/visdom/server.py", line 1063, in <module>
+    main()
+  File "/home/shared/anaconda3/lib/python3.6/site-packages/visdom/server.py", line 1058, in main
+    start_server(port=FLAGS.port, env_path=FLAGS.env_path, readonly=FLAGS.readonly, print_func=print_func)
+  File "/home/shared/anaconda3/lib/python3.6/site-packages/visdom/server.py", line 1018, in start_server
+    app.listen(port, max_buffer_size=1024 ** 3)
+  File "/home/shared/anaconda3/lib/python3.6/site-packages/tornado/web.py", line 1944, in listen
+    server.listen(port, address)
+  File "/home/shared/anaconda3/lib/python3.6/site-packages/tornado/tcpserver.py", line 142, in listen
+    sockets = bind_sockets(port, address=address)
+  File "/home/shared/anaconda3/lib/python3.6/site-packages/tornado/netutil.py", line 197, in bind_sockets
+    sock.bind(sockaddr)
+OSError: [Errno 98] Address already in use
+Downloading scripts. It might take a while.
+It's Alive!
+INFO:tornado.access:101 GET /vis_socket (127.0.0.1) 0.66ms
+INFO:root:Opened visdom socket from ip: 127.0.0.1

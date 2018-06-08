@@ -12,13 +12,14 @@ class Quant:
         if bits == 1:
             return torch.sign(input) - 1
         sf = torch.ceil(torch.log2(torch.max(torch.abs(input))))
-        delta = math.pow(2.0, -sf)
+        delta = math.pow(2.0, sf-bits+1)
         bound = math.pow(2.0, bits-1)
         min_val = - bound
         max_val = bound - 1
         rounded = torch.floor(input / delta + 0.5)
 
         clipped_value = torch.clamp(rounded, min_val, max_val) * delta
+        #print (clipped_value)
         return clipped_value
 
 class quantization(torch.autograd.Function):

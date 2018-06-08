@@ -2,4 +2,5 @@ cs231n/*
 .ipynb_checkpoints/*
 *.DS_Store
 *.pt
-faster-rcnn/data/*
+*.pyc
+faster-rcnn/*

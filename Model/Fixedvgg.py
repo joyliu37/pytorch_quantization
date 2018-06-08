@@ -16,20 +16,21 @@ class FixedVGG(nn.Module):
     '''
     VGG model
     '''
-    def __init__(self, features):
+    def __init__(self, _features, _bits=8):
         super(FixedVGG, self).__init__()
-        self.features = features
+        self.features = _features
+        self.bits = _bits
         idx = 0
         self.classifier = nn.Sequential(OrderedDict([
             (str(idx),nn.Dropout()),
-            ('Q'+str(idx+1),activation_quantization()),
+            ('Q'+str(idx+1),activation_quantization(bits = self.bits)),
             (str(idx+1),nn.Linear(512, 512)),
             (str(idx+2),nn.ReLU(True)),
             (str(idx+3),nn.Dropout()),
-            ('Q'+str(idx+2),activation_quantization() ),
+            ('Q'+str(idx+2),activation_quantization(bits = self.bits) ),
             (str(idx+4),nn.Linear(512, 512)),
             (str(idx+5),nn.ReLU(True)),
-            ('Q'+str(idx+3),activation_quantization() ),
+            ('Q'+str(idx+3),activation_quantization(bits = self.bits) ),
             (str(idx+6),nn.Linear(512, 10))
             ])
         )
@@ -48,7 +49,7 @@ class FixedVGG(nn.Module):
         return x
 
 
-def make_layers(cfg, batch_norm=False):
+def make_layers(cfg, batch_norm=False, bits=8):
 
     layers = []
     idx = 0
@@ -65,7 +66,7 @@ def make_layers(cfg, batch_norm=False):
                 idx += 3
             else:
                 #if(idx < 17):
-                layers += [('Q'+str(idx),activation_quantization())]
+                layers += [('Q'+str(idx),activation_quantization(bits=bits))]
                 layers += [(str(idx),conv2d), (str(idx+1),nn.ReLU(inplace=True))]
                 idx += 2
             in_channels = v
@@ -111,9 +112,9 @@ def fixed_vgg16_bn():
     return FixedVGG(make_layers(cfg['D'], batch_norm=True))
 
 
-def fixed_vgg19():
+def fixed_vgg19(bits=8):
     """VGG 19-layer model (configuration "E")"""
-    return FixedVGG(make_layers(cfg['E']))
+    return FixedVGG(make_layers(cfg['E'], bits=bits))
 
 
 def fixed_vgg19_bn():
